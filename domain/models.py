@@ -1,4 +1,4 @@
-# models.py
+# domain/models.py
 from pydantic import BaseModel
 
 
