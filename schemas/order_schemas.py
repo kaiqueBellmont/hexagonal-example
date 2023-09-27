@@ -1,8 +1,8 @@
-# models.py
+# order_schemas.py
 from pydantic import BaseModel
 
 
-class Order(BaseModel):
-    id: int
+class OrderCreateSchema(BaseModel):
     customer_name: str
     total_amount: float
+

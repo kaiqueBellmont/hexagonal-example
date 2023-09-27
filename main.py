@@ -1,15 +1,21 @@
-# main.py
 from fastapi import FastAPI
 from application.adapters.order_service_adapter import OrderServiceAdapter
 from domain.models import Order
+from repositories.order_repository_impl import OrderRepositoryImpl
+from schemas.order_schemas import OrderCreateSchema
 
 app = FastAPI()
-order_service = OrderServiceAdapter()
+
+# Configure a instância do repositório
+order_repository = OrderRepositoryImpl()
+
+# Configure a instância do serviço de pedidos
+order_service = OrderServiceAdapter(order_repository)
 
 
 @app.post("/orders/", response_model=Order)
-async def create_order(customer_name: str, total_amount: float):
-    return order_service.create_order(customer_name, total_amount)
+async def create_order(order_create: OrderCreateSchema):
+    return order_service.create_order(order_create.customer_name, order_create.total_amount)
 
 
 @app.get("/orders/{order_id}", response_model=Order)

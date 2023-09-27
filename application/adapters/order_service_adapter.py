@@ -1,24 +1,17 @@
+# order_service_adapter.py
 from domain.models import Order
 from application.ports.order_service import OrderServicePort
-from adapters.database_adapter import SessionLocal, OrderDB
+from repositories.order_repository import OrderRepository
 
 
 class OrderServiceAdapter(OrderServicePort):
-    def create_order(self, customer_name: str, total_amount: float):
-        db_order = OrderDB(customer_name=customer_name, total_amount=total_amount)
-        db = SessionLocal()
-        db.add(db_order)
-        db.commit()
-        db.refresh(db_order)
-        db.close()
-        return Order(id=db_order.id, customer_name=db_order.customer_name, total_amount=db_order.total_amount)
+    def __init__(self, order_repository: OrderRepository):
+        self.order_repository = order_repository
 
-    def get_order(self, order_id: int):
-        db = SessionLocal()
-        db_order = db.query(OrderDB).filter(OrderDB.id == order_id).first()
-        db.close()
+    def create_order(self, customer_name: str, total_amount: float) -> Order:
+        return self.order_repository.create_order(customer_name, total_amount)
 
-        if db_order:
-            return Order(id=db_order.id, customer_name=db_order.customer_name, total_amount=db_order.total_amount)
-        else:
-            return None
+    def get_order(self, order_id: int) -> Order:
+        return self.order_repository.get_order(order_id)
+
+
