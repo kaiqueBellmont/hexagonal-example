@@ -1,4 +1,5 @@
 # application/order_Service_adapter.py
+from typing import List
 
 from domain.models import Order
 from application.ports.order_service import OrderServicePort
@@ -13,6 +14,10 @@ class OrderServiceAdapter(OrderServicePort):
 
     def create_order(self, customer_name: str, total_amount: float) -> Order:
         return self.order_repository.create_order(customer_name, total_amount)
+
+
+    def get_orders(self) -> List[Order]:
+        return self.order_repository.get_orders()
 
     def get_order(self, order_id: int) -> Order:
         return self.order_repository.get_order(order_id)
