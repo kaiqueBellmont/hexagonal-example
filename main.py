@@ -7,6 +7,10 @@ from repositories.order_repository_impl import OrderRepositoryImpl
 from schemas.order_schemas import OrderCreateSchema, OrderItem
 from domain.order_logic import OrderLogic
 
+from strawberry.asgi import GraphQL
+
+from application.adapters.graphql_adapter import schema
+
 app = FastAPI()
 
 # Configure a instância do repositório
@@ -15,6 +19,15 @@ order_repository = OrderRepositoryImpl()
 # Configure a instância do serviço de pedidos
 order_logic = OrderLogic()
 order_service = OrderServiceAdapter(order_repository, order_logic)
+
+
+# Routes
+app.add_route("/graphql", GraphQL(schema))
+
+
+@app.get("/orders/", response_model=List[Order])
+async def get_orders():
+    return order_service.get_orders()
 
 
 @app.post("/orders/", response_model=Order)
@@ -31,6 +44,5 @@ async def get_order(order_id: int):
 
 @app.post("/calculate-order-total/")
 async def calculate_order_total(order_items: List[OrderItem]):
-    total = order_service.calculate_order_total(order_items)  # Passe a lista de OrderItem
+    total = order_service.calculate_order_total(order_items)
     return {"total_amount": total}
-
